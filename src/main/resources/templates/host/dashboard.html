@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Host Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding-top: 80px;
+            padding-bottom: 40px;
+        }
+        nav {
+            position: fixed; top: 0; left: 0; right: 0;
+            background: rgba(255,255,255,0.98);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
+        .nav-container {
+            max-width: 1400px; margin: 0 auto;
+            padding: 0 20px;
+            display: flex; justify-content: space-between; align-items: center; height: 70px;
+        }
+        .nav-brand { font-size: 1.5em; font-weight: bold; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .nav-links a { padding: 10px 20px; text-decoration: none; border-radius: 8px; font-weight: 500; color: white; display: inline-block; transition: all 0.3s ease; }
+        .nav-links a.dashboard { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .nav-links a.logout { background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%); }
+        .nav-links a:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+
+        .content { max-width: 1400px; margin: auto; padding: 40px 20px; }
+        h2 { text-align: center; color: white; margin-bottom: 30px; font-size: 2.5em; text-shadow: 2px 2px 4px rgba(0,0,0,0.2); }
+
+        .add-event-btn {
+            display: block; width: fit-content; margin: 0 auto 30px;
+            padding: 14px 30px; background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 1.1em;
+            transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        .add-event-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(17,153,142,0.4); }
+
+        .events-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(280px,1fr)); gap: 20px; }
+        .event-card {
+            background: white; border-radius: 12px; box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+            overflow: hidden; display: flex; flex-direction: column; transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .event-card:hover { transform: translateY(-5px); box-shadow: 0 25px 50px rgba(0,0,0,0.25); }
+        .event-card img { width: 100%; height: 180px; object-fit: cover; }
+        .card-body { padding: 15px 20px; flex-grow: 1; }
+        .card-body h3 { font-size: 1.3em; margin-bottom: 10px; color: #333; }
+        .card-body p { font-size: 0.95em; margin-bottom: 6px; color: #555; }
+        .card-footer { display: flex; justify-content: space-between; padding: 10px 20px 15px; }
+        .card-footer a, .card-footer button { text-decoration: none; padding: 6px 14px; border-radius: 6px; color: white; font-weight: 500; font-size: 0.9em; transition: all 0.3s ease; border: none; cursor: pointer; }
+        .edit-btn { background: #11998e; }
+        .delete-btn { background: #eb3349; }
+        .card-footer a:hover, .card-footer button:hover { opacity: 0.85; }
+
+        @media(max-width:768px){ .events-grid { grid-template-columns: 1fr; } .add-event-btn { padding: 12px 25px; font-size: 1em; } }
+    </style>
+</head>
+<body>
+<nav>
+    <div class="nav-container">
+        <div class="nav-brand">Host Panel</div>
+        <div class="nav-links">
+            <a th:href="@{/host/booking}" class="dashboard">View Bookings</a>
+            <a href="/login" class="logout">Logout</a>
+        </div>
+    </div>
+</nav>
+
+<div class="content">
+    <h2>Host Dashboard</h2>
+
+    <a th:href="@{/host/add-event}" class="add-event-btn">+ Add New Event</a>
+
+    <div class="events-grid">
+        <div class="event-card" th:each="e : ${events}">
+			<img th:src="${e.imageUrl != null ? e.imageUrl : '/images/default-event.jpg'}" alt="Event Image"/>
+            <div class="card-body">
+                <h3 th:text="${e.name}">Event Name</h3>
+                <p><strong>Location:</strong> <span th:text="${e.location}">Location</span></p>
+                <p><strong>Start:</strong> <span th:text="${#temporals.format(e.eventStartDateTime, 'yyyy-MM-dd HH:mm')}">Start Date</span></p>
+                <p><strong>End:</strong> <span th:text="${#temporals.format(e.eventEndDateTime, 'yyyy-MM-dd HH:mm')}">End Date</span></p>
+                <p><strong>Capacity:</strong> <span th:text="${e.guestCapacity}">0</span></p>
+                <p><strong>Price:</strong> Rs.<span th:text="${e.ticketPrice}">0</span></p>
+                <p><strong>Venue:</strong> <span th:text="${e.venue != null ? e.venue : 'N/A'}">Venue</span></p>
+            </div>
+
+            <div class="card-footer">
+                <a th:href="@{/host/edit-event/{id}(id=${e.id})}" class="edit-btn">Edit</a>
+                <!-- Delete form -->
+                <form th:action="@{/host/delete-event/{id}(id=${e.id})}" method="post" style="display:inline;">
+                    <button type="submit" class="delete-btn">Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

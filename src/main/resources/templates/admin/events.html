@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Admin Dashboard - Events</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding-top: 80px;
+        }
+
+        nav {
+            position: fixed; top: 0; left: 0; right: 0;
+            background: rgba(255,255,255,0.98);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1400px; margin: 0 auto;
+            padding: 0 20px;
+            display: flex; justify-content: space-between; align-items: center; height: 70px;
+        }
+
+        .nav-brand { font-size: 1.5em; font-weight: bold;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+
+        .nav-links a {
+            padding: 10px 20px; text-decoration: none; border-radius: 8px;
+            font-weight: 500; color: white; display: inline-block; transition: all 0.3s ease;
+        }
+
+        .nav-links a.dashboard { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .nav-links a.logout { background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%); }
+
+        .content { padding: 40px 20px; max-width: 1400px; margin: auto; }
+        h2 { text-align: center; color: white; margin-bottom: 30px; font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2); }
+
+        .cards-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            justify-content: center;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.25);
+            display: flex;
+            flex-direction: column;
+            height: 400px;
+        }
+
+        .card img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+        }
+
+        .card-content {
+            padding: 15px; display: flex; flex-direction: column; flex: 1;
+        }
+
+        .card-content h3 {
+            font-size: 1.2em; color: #333; margin-bottom: 5px;
+        }
+
+        .card-content p {
+            font-size: 0.9em; color: #555; margin-bottom: 5px;
+        }
+
+        .card-content .host-email {
+            font-weight: 600;
+        }
+
+        .card-footer {
+            padding: 10px 15px;
+            text-align: center;
+        }
+
+        .card-footer a {
+            display: inline-block; padding: 8px 16px; text-decoration: none;
+            border-radius: 6px; font-weight: 600; background: linear-gradient(135deg,#eb3349 0%,#f45c43 100%);
+            color:white; transition: all 0.3s ease;
+        }
+
+        .card-footer a:hover {
+            transform: translateY(-2px); box-shadow:0 4px 12px rgba(235,51,73,0.4);
+        }
+
+        @media(max-width:768px){
+            h2{font-size:1.8em;}
+            .card{height:380px; max-width:100%;}
+        }
+    </style>
+</head>
+<body>
+<nav>
+    <div class="nav-container">
+        <div class="nav-brand">GoEvent</div>
+        <div class="nav-links">
+            <a href="/admin/dashboard" class="dashboard">Dashboard</a>
+            <a href="/login" class="logout">Logout</a>
+        </div>
+    </div>
+</nav>
+
+<div class="content">
+    <h2>All Events</h2>
+
+    <div class="cards-container" th:if="${#lists.size(events) > 0}">
+        <div class="card" th:each="e : ${events}">
+            <img th:src="${e.imageUrl != null ? e.imageUrl : '/images/default-event.jpg'}" alt="Event Image"/>
+            <div class="card-content">
+                <h3 th:text="${e.name}">Event Name</h3>
+                <p class="host-email">Host: <span th:text="${e.host.email}">host@example.com</span></p>
+                <p>Start: <span th:text="${#temporals.format(e.eventStartDateTime,'yyyy-MM-dd HH:mm')}">Start Time</span></p>
+                <p>End: <span th:text="${#temporals.format(e.eventEndDateTime,'yyyy-MM-dd HH:mm')}">End Time</span></p>
+            </div>
+            <div class="card-footer">
+                <a th:href="@{/admin/delete-event/{id}(id=${e.id})}">Delete</a>
+            </div>
+        </div>
+    </div>
+
+    <div th:if="${#lists.isEmpty(events)}" style="text-align:center; color:white; margin-top:40px;">
+        <p>No events available.</p>
+    </div>
+</div>
+</body>
+</html>

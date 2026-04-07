@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Profile Edit</title>
+
+	<style>
+		body {
+			margin: 0;
+			font-family: Arial, Helvetica, sans-serif;
+			background: #f4f6f9;
+		}
+
+		.navbar {
+			background: #0077cc;
+			padding: 15px 25px;
+			color: white;
+			font-size: 20px;
+			font-weight: bold;
+		}
+
+		.container {
+			max-width: 650px;
+			background: #fff;
+			margin: 40px auto;
+			padding: 30px;
+			border-radius: 12px;
+			box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+			text-align: center;
+		}
+
+		h1 {
+			color: #0077cc;
+			margin-bottom: 10px;
+		}
+
+		img {
+			border-radius: 50%;
+			border: 3px solid #0077cc;
+			margin-bottom: 15px;
+		}
+
+		.form-group {
+			text-align: left;
+			margin-top: 20px;
+			font-size: 17px;
+		}
+
+		.label {
+			font-weight: bold;
+			color: #444;
+		}
+
+		.input-field {
+			width: 100%;
+			padding: 10px;
+			margin-top: 5px;
+			border-radius: 6px;
+			border: 1px solid #ccc;
+			font-size: 16px;
+			box-sizing: border-box;
+		}
+
+        .readonly-text {
+            display: inline-block;
+            margin-left: 8px;
+            color: #555;
+        }
+
+		.submit-btn {
+			width: 100%;
+			margin-top: 30px;
+			background: #0077cc;
+			color: white;
+			padding: 12px;
+			font-size: 18px;
+			font-weight: bold;
+			border: none;
+			border-radius: 6px;
+			cursor: pointer;
+			transition: 0.3s;
+		}
+
+		.submit-btn:hover {
+			background: #005fa3;
+		}
+	</style>
+</head>
+
+<body>
+
+	<div class="navbar">
+		Edit Profile
+	</div>
+
+	<div class="container">
+
+		<h1 th:text="${user.firstName} + ' ' + ${user.lastName}"></h1>
+
+		<form th:action="@{/profile/edit}" method="post" th:object="${user}" enctype="multipart/form-data">
+
+			<!-- Profile Photo -->
+			<div>
+				<img th:if="${user.profilePicture == null}" th:src="@{/images/profile.jpg}" height="130px" alt="Profile">
+				<img th:if="${user.profilePicture != null}"
+					th:src="@{/uploads/{filename}(filename=${user.profilePicture})}" height="130px" alt="Profile">
+			</div>
+
+			<div class="form-group">
+				<label class="label">Change Profile Picture</label><br>
+				<input type="file" name="profile" class="input-field">
+			</div>
+
+			<!-- Email -->
+			<div class="form-group">
+				<span class="label">Email:</span>
+				<span class="readonly-text" th:text="${user.email}"></span>
+			</div>
+
+			<!-- Username -->
+			<div class="form-group">
+				<span class="label">Username:</span>
+				<span class="readonly-text" th:text="${user.username}"></span>
+			</div>
+
+			<!-- Gender -->
+			<div class="form-group">
+				<span class="label">Gender:</span>
+				<span class="readonly-text" th:text="${user.gender}"></span>
+			</div>
+
+			<!-- Address -->
+			<div class="form-group">
+				<label class="label">Address</label>
+				<input type="text" th:field="*{address}" class="input-field" placeholder="Enter your address">
+			</div>
+
+			<button type="submit" class="submit-btn">Save Changes</button>
+		</form>
+
+	</div>
+
+</body>
+
+</html>

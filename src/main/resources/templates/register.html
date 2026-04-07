@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Register</title>
+
+	<style>
+		body {
+			font-family: Arial, sans-serif;
+			background: #f4f4f4;
+			display: flex;
+			justify-content: center;
+			margin-top: 40px;
+		}
+
+		form {
+			background: #fff;
+			padding: 25px;
+			border-radius: 8px;
+			box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+			width: 350px;
+		}
+
+		h2 {
+			text-align: center;
+			margin-bottom: 20px;
+		}
+
+		div {
+			margin-bottom: 15px;
+		}
+
+		label {
+			display: block;
+			margin-bottom: 5px;
+			font-weight: bold;
+		}
+
+		input[type="text"],
+		input[type="email"],
+		input[type="password"] {
+			width: 100%;
+			padding: 8px;
+			border: 1px solid #aaa;
+			border-radius: 5px;
+		}
+
+		input[type="radio"] {
+			margin-right: 5px;
+		}
+
+		input[type="submit"] {
+			width: 100%;
+			padding: 10px;
+			background: #4CAF50;
+			border: none;
+			color: #fff;
+			font-size: 16px;
+			border-radius: 5px;
+			cursor: pointer;
+		}
+
+		input[type="submit"]:hover {
+			background: #45a049;
+		}
+
+		p {
+			text-align: center;
+		}
+
+		a {
+			color: #007BFF;
+		}
+
+		.error {
+			color: red;
+			text-align: center;
+			margin-bottom: 15px;
+		}
+	</style>
+
+</head>
+
+<body>
+
+	<form action="/register" method="post" th:object="${registerForm}">
+		<h2>Registration Form</h2>
+
+		<p th:if="${error.hasError}" th:text="${error.msg}" class="error">
+		</p>
+
+		<div>
+			<label for="userType">Register as:</label>
+			<select th:field="*{userType}">
+				<option th:each="utype: ${userTypes}" th:text="${utype}" th:value="${utype}"></option>
+			</select>
+		</div>
+
+		<div>
+			<label for="name">First Name:</label>
+			<input type="text" th:field="*{firstName}">
+		</div>
+
+		<div>
+			<label for="lastName">Last Name:</label>
+			<input type="text" th:field="*{lastName}">
+		</div>
+
+		<div>
+			<label>Gender:</label>
+			<input type="radio" th:field="*{gender}" id="gender-male" value="MALE">
+			<label for="gender-male" style="display:inline;">Male</label>
+
+			<input type="radio" th:field="*{gender}" id="gender-female" value="FEMALE">
+			<label for="gender-female" style="display:inline;">Female</label>
+		</div>
+
+		<div>
+			<label for="email">Email:</label>
+			<input type="email" th:field="*{email}">
+		</div>
+
+		<div>
+			<label for="password">Password:</label>
+			<input type="password" th:field="*{password}">
+		</div>
+
+		<div>
+			<label for="confirmPassword">Confirm Password:</label>
+			<input type="password" th:field="*{confirmPassword}">
+		</div>
+
+		<div>
+			<input type="submit" value="Register">
+		</div>
+
+		<p>Already have an account? <a href="/login">Login here!</a></p>
+	</form>
+
+</body>
+
+</html>

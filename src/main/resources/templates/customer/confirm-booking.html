@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Confirm Booking</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            padding-top: 80px;
+        }
+
+        .card {
+            background: white;
+            max-width: 600px;
+            margin: auto;
+            padding: 30px;
+            border-radius: 12px;
+        }
+
+        h2 { text-align: center; margin-bottom: 20px; }
+
+        .event-image img {
+            width: 100%;
+            max-height: 300px;
+            object-fit: cover;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .event-info p {
+            margin: 10px 0;
+            font-size: 16px;
+        }
+
+        .event-info span {
+            font-weight: 500;
+        }
+
+        .price-highlight {
+            color: #11998e;
+            font-weight: bold;
+        }
+
+        .available {
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .error {
+            color: red;
+            text-align: center;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        input, button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 10px;
+            font-size: 16px;
+        }
+
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:disabled {
+            background: gray;
+            cursor: not-allowed;
+        }
+
+        .total-box {
+            margin-top: 10px;
+            font-weight: bold;
+            color: #11998e;
+            text-align: center;
+        }
+
+        .back-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .back-link a {
+            text-decoration: none;
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        @media(max-width: 600px) {
+            .card { padding: 20px; }
+            input, button { font-size: 14px; }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="card">
+    <h2>Confirm Booking</h2>
+
+    <!-- Event Image -->
+    <div class="event-image">
+        <img th:if="${event.imageUrl != null}" th:src="@{${event.imageUrl}}" alt="Event Image" />
+        <p th:if="${event.imageUrl == null}">No image available</p>
+    </div>
+
+    <!-- ERROR MESSAGE -->
+    <div class="error" th:if="${error}" th:text="${error}"></div>
+
+    <div class="event-info">
+        <p>
+            <strong>Event:</strong>
+            <span th:text="${event.name}"></span>
+        </p>
+        <p>
+            <strong>Price:</strong>
+            <span class="price-highlight">Rs<span th:text="${event.ticketPrice}"></span></span>
+        </p>
+        <p>
+            <strong>Available Seats:</strong>
+            <span class="available" th:text="${availableSeats}"></span>/<span th:text="${event.guestCapacity}"></span>
+        </p>
+    </div>
+
+    <!-- IF FULL -->
+    <div th:if="${availableSeats == 0}">
+        <p class="error">This event is fully booked.</p>
+        <button disabled>Booking Closed</button>
+    </div>
+
+    <!-- IF SEATS AVAILABLE -->
+    <form th:if="${availableSeats > 0}" th:action="@{/customer/confirm-booking}" method="post">
+        <input type="hidden" name="eventId" th:value="${event.id}" />
+
+        <label>Number of Tickets</label>
+        <input type="number"
+               id="ticketCount"
+               name="ticketCount"
+               min="1"
+               th:attr="max=${availableSeats}"
+               value="1"
+               oninput="updateTotal()" />
+
+        <div class="total-box">
+            Total Amount: Rs<span id="totalAmount"></span>
+        </div>
+
+        <button type="submit">Confirm Booking</button>
+    </form>
+
+    <!-- Back to Dashboard -->
+    <div class="back-link">
+        <a th:href="@{/customer/dashboard}">← Back to Dashboard</a>
+    </div>
+</div>
+
+<script>
+    function updateTotal() {
+        const price = parseFloat(document.querySelector(".price-highlight span").innerText);
+        const qty = parseInt(document.getElementById("ticketCount").value) || 0;
+        document.getElementById("totalAmount").innerText = price * qty;
+    }
+    updateTotal();
+</script>
+
+</body>
+</html>
